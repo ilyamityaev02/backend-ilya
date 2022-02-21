@@ -101,11 +101,7 @@
     color: red;
   }
 </style>
-<!-- <form action="" method="POST">
-  <input name="fio" />
-  <input type="submit" value="ok" />
-</form> -->
-<form id="form" method="POST" action="/">
+<form id="form" method="POST" action="">
           <label> <input type="text" placeholder="Имя" name="fio"/><br /></label>
           <label><input type="email" placeholder="Email" name="email"/><br /></label>
           <label><input type="date" name="date"/><br /></label>
