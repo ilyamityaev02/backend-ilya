@@ -4,6 +4,9 @@ header('Content-Type: text/html; charset=UTF-8');
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
   if (!empty($_GET['save'])) {
     print('Спасибо, результаты сохранены.');
+    if($_GET['id']){
+    print('Ваш ID:'.$_GET['id']);
+    }
   }
   include('form.php');
   exit();
@@ -39,11 +42,7 @@ if (empty($_POST['about'])) {
   print('Напишите биографию.<br/>');
   $errors = TRUE;
 }
-if($_POST['check'] == 'Yes'){
-  if(!$errors){
-    print('Все заполнено верно. Данные сохранены в базу данных<br/>');
-  }
-}else{
+if(empty($_POST['check'])){
   print('Вы не прочитали контракт.<br/>');
   $errors = TRUE;
 }
@@ -56,18 +55,23 @@ if ($errors) {
 $user = 'u47522';
 $pass = '7677055';
 $db = new PDO('mysql:host=localhost;dbname=u47522', $user, $pass, array(PDO::ATTR_PERSISTENT => true));
-
+if($db){
+  print('fine');
+}else{
+  print('no');
+  exit();
+}
 $fio = $_POST['fio'];
-$email = $_POST['fio'];
+$email = $_POST['email'];
 $date = $_POST['date'];
 $gender = $_POST['gender'];
 $arms = $_POST['arms'];
 $about = $_POST['about'];
 
 $arg = implode(',',$_POST['arg']);
-
 try {
-  $stmt = $db->prepare("INSERT INTO heroes SET fio = ?, email = ?, date = ?, gender = ?, arma = ?, about = ?");
+
+  $stmt = $db->prepare("INSERT INTO heroes SET fio = ?, email = ?, date = ?, gender = ?, arms = ?, about = ?");
   $stmt -> execute([$fio,$email,$date,$gender,$arms,$about]);
   $id = $db->lastInsertId();
 
@@ -78,5 +82,4 @@ catch(PDOException $e){
   print('Error : ' . $e->getMessage());
   exit();
 }
-print('Ваш ID = '.$id);
-header('Location: ?save=1');
+header('Location: ?save=1&id='.$id);
