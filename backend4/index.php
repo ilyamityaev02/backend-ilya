@@ -20,15 +20,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
   $errors['check'] = !empty($_COOKIE['check_error']);
   if ($errors['fio']) {
     setcookie('fio_error', '', 100000);
-    $messages[] = '<div class="error">Заполните имя.</div>';
+    $messages[] = '<div class="error">Заполните имя. Имя может содержать только русские / латинские символы, пробел, цифры и знак _</div>';
   }
   if ($errors['email']) {
     setcookie('email_error', '', 100000);
-    $messages[] = '<div class="error">Заполните Email.</div>';
+    $messages[] = '<div class="error">Заполните Email. Email может содержать только русские / латинские символы, цифры, @ и знак . </div>';
   }
   if ($errors['date']) {
     setcookie('date_error', '', 100000);
-    $messages[] = '<div class="error">Заполните дату.</div>';
+    $messages[] = '<div class="error">Заполните дату. Год-месяц-день</div>';
   }
   if ($errors['gender']) {
     setcookie('gender_error', '', 100000);
@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
   }
   if ($errors['check']) {
     setcookie('check_error', '', 100000);
-    $messages[] = '<div class="error">Ознакомтесь с контарктом.</div>';
+    $messages[] = '<div class="error">Ознакомтесь с контрактом.</div>';
   }
 
   $values = array();
@@ -65,21 +65,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 }else{
 	
   $errors = FALSE;
-  if (empty($_POST['fio'])) {
+  if (empty($_POST['fio']) || preg_match("/[^(\w)|(\x7F-\xFF)|(\s)]/", $_POST['fio'])) {
     setcookie('fio_error', '1', time() + 24 * 60 * 60);
     $errors = TRUE;
   }
   else {
     setcookie('fio_value', $_POST['fio'], time() + 30 * 24 * 60 * 60);
   }
-  if (empty($_POST['email'])) {
+  if (empty($_POST['email']) || !preg_match('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,3})$/', $_POST['email'])) {
     setcookie('email_error', '1', time() + 24 * 60 * 60);
     $errors = TRUE;
   }
   else {
     setcookie('email_value', $_POST['email'], time() + 30 * 24 * 60 * 60);
   }
-  if (empty($_POST['date'])) {
+  if (empty($_POST['date']) || preg_match('/^[0-9]{2}-[0-9]{2}-[0-9]{4}$/', $_POST['date'])) {
     setcookie('date_error', '1', time() + 24 * 60 * 60);
     $errors = TRUE;
   }
@@ -99,13 +99,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
   }
   else {
     setcookie('arms_value', $_POST['arms'], time() + 30 * 24 * 60 * 60);
-  }  
+  }
   if (empty($_POST['arg'])) {
     setcookie('arg_error', '1', time() + 24 * 60 * 60);
     $errors = TRUE;
   }
   else {
-    setcookie('arg_value', $_POST['arg'], time() + 30 * 24 * 60 * 60);
+    setcookie('arg_value', implode(',',$_POST['arg']), time() + 30 * 24 * 60 * 60);
   }  
   if (empty($_POST['about'])) {
     setcookie('about_error', '1', time() + 24 * 60 * 60);
@@ -135,8 +135,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 	setcookie('arg_error', '', 100000);
 	setcookie('about_error', '', 100000);
 	setcookie('check_error', '', 100000);
-  }
-
 	$user = 'u47522';
 	$pass = '7677055';
 	$db = new PDO('mysql:host=localhost;dbname=u47522', $user, $pass, array(PDO::ATTR_PERSISTENT => true));
@@ -161,6 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 	  print('Error : ' . $e->getMessage());
 	  exit();
 	}
+  } 
 
   setcookie('save', '1');
   header('Location: index.php');
